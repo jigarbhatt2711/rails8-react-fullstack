@@ -1,29 +1,71 @@
 import React, { useEffect, useState } from "react";
 import QuestionDetail from "./QuestionDetail";
+import NoSearchFoundMessage from "./NoSearchFoundMessage";
 
 const QuestionList = () => {
-	const [questions, setQuestions] = useState([])
-	const getQuestionsApiUrl = "http://127.0.0.1:3000/api/v1/questions"
+  const [questions, setQuestions] = useState([]);
+  const getQuestionsApiUrl = "http://127.0.0.1:3000/api/v1/questions";
+  const questionsTags = [
+    { label: "All", value: 0 },
+    { label: "React", value: 1 },
+    { label: "Ruby", value: 2 },
+    { label: "Rails", value: 3 },
+    { label: "Vue", value: 4 },
+    { label: "Next", value: 5 },
+  ];
+  const [selectTag, setSelectTag] = useState(questionsTags[0].value);
+  const fetchQuestions = () => {
+    fetch(getQuestionsApiUrl)
+      .then((response) => response.json())
+      .then((data) => setQuestions(data))
+      .catch((e) => console.log("error is ", e));
+  };
 
-	const fetchQuestions = () => {
-		fetch(getQuestionsApiUrl)
-		.then(response => response.json())
-		.then(data => setQuestions(data))
-		.catch(e => console.log("error is ", e));
-	}
+  //   on page reload -call questions#index API
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
-	useEffect(() => {
-		fetchQuestions()
-	}, [])
+  //   on change dropdown - call this method
+  const updateListing = (tagValue) => {
+    setSelectTag(tagValue);
+    fetch(getQuestionsApiUrl + `?tag=${questionsTags[tagValue].label}`)
+      .then((response) => response.json())
+      .then((data) => setQuestions(data))
+      .catch((e) => console.log("error is ", e));
+  };
 
   return (
-    <div className="row">
-      <div className="card-group">
-        {questions.map((question) => (
-          <QuestionDetail question={question} key={question.id} />
-        ))}
+    <>
+      {/* filter view */}
+      <div className="row">
+        <label>Choose a Tag:</label>
+        <select
+          className="custom-select"
+          value={selectTag}
+          onChange={(event) => updateListing(event.target.value)}
+        >
+          {questionsTags.map((tag) => (
+            <option key={tag.value} value={tag.value}>
+              {tag.label}
+            </option>
+          ))}
+        </select>
       </div>
-    </div>
+
+      {/* listing view OR No record found message */}
+      {questions.length > 0 ? (
+        <div className="row mt-5">
+          <div className="card-group">
+            {questions.map((question) => (
+              <QuestionDetail question={question} key={question.id} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <NoSearchFoundMessage tag={questionsTags[selectTag]} />
+      )}
+    </>
   );
 };
 
