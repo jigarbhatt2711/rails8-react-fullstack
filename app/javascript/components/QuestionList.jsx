@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import QuestionDetail from "./QuestionDetail";
 import NoSearchFoundMessage from "./NoSearchFoundMessage";
+import Loader from "./Loader";
 
 const QuestionList = () => {
   const [questions, setQuestions] = useState([]);
@@ -15,8 +16,10 @@ const QuestionList = () => {
   ];
   const [selectTag, setSelectTag] = useState(questionsTags[0].value);
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
+  const [isDisplayLoader, setIsDisplayLoader] = useState(false);
 
   const fetchQuestions = (tagLabel = "All") => {
+    setIsDisplayLoader(true);
     const url =
       tagLabel == "All"
         ? getQuestionsApiUrl
@@ -25,11 +28,12 @@ const QuestionList = () => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-			console.log(data)
-			setQuestions(data)
-			data.length > 0 ? setIsDisplayAlert(false) : setIsDisplayAlert(true)
-		})
-      .catch((e) => console.log("error is ", e));
+        console.log(data);
+        setQuestions(data);
+        data.length > 0 ? setIsDisplayAlert(false) : setIsDisplayAlert(true);
+      })
+      .catch((e) => console.log("error is ", e))
+      .finally(() => setIsDisplayLoader(false));
   };
 
   //   on page reload -call questions#index API
@@ -61,6 +65,9 @@ const QuestionList = () => {
         </select>
       </div>
 
+      {/* display loader */}
+      <Loader showLoader={isDisplayLoader} />
+
       {/* listing view */}
       {questions.length > 0 ? (
         <div className="row mt-5">
@@ -70,11 +77,14 @@ const QuestionList = () => {
             ))}
           </div>
         </div>
-      ) : '' }
+      ) : (
+        ""
+      )}
 
       {/* No record found message */}
-	  { isDisplayAlert && <NoSearchFoundMessage tag={questionsTags[selectTag]}/> }
-
+      {isDisplayAlert && (
+        <NoSearchFoundMessage tag={questionsTags[selectTag]} />
+      )}
     </>
   );
 };
