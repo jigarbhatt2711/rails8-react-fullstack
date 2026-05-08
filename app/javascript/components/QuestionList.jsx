@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import QuestionDetail from "./QuestionDetail";
 import NoSearchFoundMessage from "./NoSearchFoundMessage";
 import Loader from "./Loader";
+import NewQuestion from "./NewQuestion";
 
 const QuestionList = () => {
   const [questions, setQuestions] = useState([]);
@@ -85,6 +86,10 @@ const QuestionList = () => {
       {isDisplayAlert && (
         <NoSearchFoundMessage tag={questionsTags[selectTag]} />
       )}
+	  <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">
+		Create Question
+	  </button>
+	  <NewQuestion />
     </>
   );
 };
