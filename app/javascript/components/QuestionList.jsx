@@ -14,6 +14,8 @@ const QuestionList = () => {
     { label: "Next", value: 5 },
   ];
   const [selectTag, setSelectTag] = useState(questionsTags[0].value);
+  const [isDisplayAlert, setIsDisplayAlert] = useState(false);
+
   const fetchQuestions = (tagLabel = "All") => {
     const url =
       tagLabel == "All"
@@ -22,7 +24,11 @@ const QuestionList = () => {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => setQuestions(data))
+      .then((data) => {
+			console.log(data)
+			setQuestions(data)
+			data.length > 0 ? setIsDisplayAlert(false) : setIsDisplayAlert(true)
+		})
       .catch((e) => console.log("error is ", e));
   };
 
@@ -55,7 +61,7 @@ const QuestionList = () => {
         </select>
       </div>
 
-      {/* listing view OR No record found message */}
+      {/* listing view */}
       {questions.length > 0 ? (
         <div className="row mt-5">
           <div className="card-group">
@@ -64,9 +70,11 @@ const QuestionList = () => {
             ))}
           </div>
         </div>
-      ) : (
-        <NoSearchFoundMessage tag={questionsTags[selectTag]} />
-      )}
+      ) : '' }
+
+      {/* No record found message */}
+	  { isDisplayAlert && <NoSearchFoundMessage tag={questionsTags[selectTag]}/> }
+
     </>
   );
 };
