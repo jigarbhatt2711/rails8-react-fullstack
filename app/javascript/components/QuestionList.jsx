@@ -14,8 +14,13 @@ const QuestionList = () => {
     { label: "Next", value: 5 },
   ];
   const [selectTag, setSelectTag] = useState(questionsTags[0].value);
-  const fetchQuestions = () => {
-    fetch(getQuestionsApiUrl)
+  const fetchQuestions = (tagLabel = "All") => {
+    const url =
+      tagLabel == "All"
+        ? getQuestionsApiUrl
+        : getQuestionsApiUrl + `?tag=${tagLabel}`;
+
+    fetch(url)
       .then((response) => response.json())
       .then((data) => setQuestions(data))
       .catch((e) => console.log("error is ", e));
@@ -29,10 +34,7 @@ const QuestionList = () => {
   //   on change dropdown - call this method
   const updateListing = (tagValue) => {
     setSelectTag(tagValue);
-    fetch(getQuestionsApiUrl + `?tag=${questionsTags[tagValue].label}`)
-      .then((response) => response.json())
-      .then((data) => setQuestions(data))
-      .catch((e) => console.log("error is ", e));
+    fetchQuestions(questionsTags[tagValue].label);
   };
 
   return (
