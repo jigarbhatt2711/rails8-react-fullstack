@@ -2,7 +2,11 @@ class Api::V1::QuestionsController < ApplicationController
     skip_before_action :verify_authenticity_token
 
     def index
-        questions = Question.all
+        if params[:tag].present? && params[:tag] != "All"
+            questions = Question.where(tag: params[:tag])
+        else
+            questions = Question.all
+        end
         render json: questions
     end
 
