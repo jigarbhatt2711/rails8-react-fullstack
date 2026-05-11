@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ServerErrors from "./ServerErrors";
 
 const NewQuestion = () => {
   const [showLoader, setShowLoader] = useState(false);
@@ -39,11 +40,21 @@ const NewQuestion = () => {
     .then(res => res.json())
     .then(data => {
       console.log(data)
+      if (data['status'] == 'failure') {
+        setIsError(true)
+        setErrorMessages(data['errors'])
+      } else {
+        setIsError(false)
+        setErrorMessages([])
+      }
     })
     .catch(error => {
       console.log("Error is ", error)
     })
   }
+
+  const [isError, setIsError] = useState(false)
+  const [errorMessages, setErrorMessages] = useState([])
 
   return (
     <div>
@@ -69,6 +80,7 @@ const NewQuestion = () => {
             </div>
             <form onSubmit={create_question}>
               <div className="modal-body">
+                { isError && <ServerErrors errors={errorMessages} /> }
                 <div className="mb-3">
                   <label htmlFor="recipient-name" className="col-form-label">
                     Title:
