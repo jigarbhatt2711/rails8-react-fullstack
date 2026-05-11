@@ -25,7 +25,25 @@ const NewQuestion = () => {
   const create_question = (event) => {
     event.preventDefault();
     console.log(formFields);
+    callCreateQuestionApi(formFields);
   };
+
+  const callCreateQuestionApi = (formFields) => {
+    fetch(`/api/v1/questions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({question: formFields})
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+    })
+    .catch(error => {
+      console.log("Error is ", error)
+    })
+  }
 
   return (
     <div>
